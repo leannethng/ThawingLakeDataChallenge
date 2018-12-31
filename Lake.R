@@ -4,6 +4,7 @@ library(ggplot2)
 
 
 
+
 # Read in the Data
 mendota <- read.csv("History of Ice on Lake Mendota.csv", stringsAsFactors = F)
 
@@ -24,6 +25,8 @@ mendota$date_diff <- as.Date(as.character(mendota$opening_date), format="%Y-%m-%
 
 
 
+
+
 # if closed date is January to April then add 1 onto the year
 
 x <- as.Date('0014-06-30')
@@ -32,23 +35,43 @@ year(x)
 year(x) <- year(x)+1
 x
 
-
+# adding one year to january and march dtaes
 month(mendota$closed_date) < 4 
 
-
+#making variables? DONT NEED
 closed <- mendota$closed_date
 closed_month <- month(mendota$closed_date)
 closed_year <- year(mendota$closed_date)
 closed_month
 
+#this work sbut is not helpful
+before_march <- ifelse(closed_month < 4, 1,0)
 
-for (i in closed){
-    
-    ifelse(closed_month < 4, 1,0)
-     
-   
+#this uses the line above but still returns the same error of not wanting to work with the logical vector
+
+##WORKING
+for (i in 1:nrow(mendota)) {
+    if(month(mendota$closed_date)[i] <= 4) {
+        print(i)
+       year(mendota$closed_date)[i] <- year(mendota$closed_date)[i] + 1
+    } else {
+        print("nope")
+        #year(mendota$closed_date) <- year(mendota$closed_date) 
+    }
 }
-warnings()
+
+#dplyr - not quite what i am after
+case_when(
+    year(mendota$closed_date) ~ year(mendota$closed_date) + 1,
+    TRUE ~ as.character(before_march)
+)
+
+print(before_march == 1)  
+
+
+
+
+mendota$date_diff_corrected <- as.Date(as.character(mendota$opening_date), format="%Y-%m-%d")- as.Date(as.character(mendota$closed_date), format="%Y-%m-%d")
 
 
 
